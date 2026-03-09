@@ -1,12 +1,31 @@
 services:
+  # The Brain's Memory (PostgreSQL)
+  postgres:
+    image: postgres:16-alpine
+    container_name: suncoast-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: suncoast_memory
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Your Agent API
   suncoast-api:
     build: .
     container_name: suncoast-agent-api
     ports:
       - "8001:8000"
     environment:
-      # This points the container to the Mac's Tailscale IP where Ollama is listening
       - OLLAMA_BASE_URL=http://100.84.103.76:11434
+      - DATABASE_URL=postgresql://user:password@postgres:5432/suncoast_memory
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - postgres
     restart: unless-stopped
+
+volumes:
+  postgres_data:
