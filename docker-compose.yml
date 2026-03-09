@@ -1,0 +1,12 @@
+services:
+  suncoast-api:
+    build: .
+    container_name: suncoast-agent-api
+    ports:
+      - "8001:8000"
+    environment:
+      # This points the container to the Mac's Tailscale IP where Ollama is listening
+      - OLLAMA_BASE_URL=http://100.84.103.76:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
